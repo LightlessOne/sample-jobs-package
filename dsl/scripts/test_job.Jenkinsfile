@@ -1,10 +1,14 @@
 local_lib = library identifier: "sm@${scm.getBranches()[0].toString()}", retriever: modernSCM([
         $class: 'GitSCMSource',
-        remote: scm.getUserRemoteConfigs()[0].getUrl().toString()
+        remote: scm.getUserRemoteConfigs()[0].getUrl().toString(),
+        credentialsId: scm.getUserRemoteConfigs()[0].getCredentialsId()
 ])
 
 pipeline {
     agent any
+    options {
+        skipDefaultCheckout("true")
+    }
     stages {
         stage('Test Stage 1') {
             steps {

@@ -1,4 +1,4 @@
-pipelineJob(PIPELINE_NAME) {
+pipelineJob("${PROJECT_NAME}/jobs/test_job_inside_folder") {
     logRotator {
         numToKeep(10)
     }
@@ -14,10 +14,10 @@ pipelineJob(PIPELINE_NAME) {
             scm {
                 git {
                     remote {
-                        credentials(GIT_CREDENTIALS)
-                        url(GIT_URL)
+                        url(GIT_REPO_URL)
+                        credentials(GIT_REPO_CREDENTIALS)
                     }
-                    branch(GIT_BRANCH)
+                    branch(GIT_REPO_BRANCH)
                 }
             }
             scriptPath('dsl/scripts/test_job.Jenkinsfile')
