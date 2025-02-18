@@ -1,4 +1,4 @@
-pipelineJob(PIPELINE_NAME) {
+pipelineJob("test_job") {
     logRotator {
         numToKeep(10)
     }
@@ -14,13 +14,12 @@ pipelineJob(PIPELINE_NAME) {
             scm {
                 git {
                     remote {
-                        credentials(GIT_CREDENTIALS)
-                        url(GIT_URL)
+                        url("https://github.com/LightlessOne/sample-jobs-package")
                     }
-                    branch(GIT_BRANCH)
+                    branch("ready_for_built_in_dsl_processor")
                 }
             }
-            scriptPath('dsl/scripts/test-job.Jenkinsfile')
+            scriptPath('dsl/scripts/test_job.Jenkinsfile')
         }
     }
 }

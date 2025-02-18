@@ -1,4 +1,4 @@
-pipelineJob(PIPELINE_NAME) {
+pipelineJob("jobs/test_job_without_git") {
     logRotator {
         numToKeep(10)
     }
@@ -9,18 +9,9 @@ pipelineJob(PIPELINE_NAME) {
         textParam("CUSTOM_TEXT", "qwe", "List of custom parameters to pass to helm charts in format KEY=VALUE, separated by semicolon ';'. E.g. - 'KEY1=VALUE1;KEY2=VALUE2'")
     }
     definition {
-        cpsScm {
-            lightweight(true)
-            scm {
-                git {
-                    remote {
-                        credentials(GIT_CREDENTIALS)
-                        url(GIT_URL)
-                    }
-                    branch(GIT_BRANCH)
-                }
-            }
-            scriptPath('dsl/scripts/test-job.Jenkinsfile')
+        cps {
+            sandbox(true)
+            script(readFileFromWorkspace('dsl/scripts/no_imports_job.Jenkinsfile'))
         }
     }
 }
