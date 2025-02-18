@@ -1,4 +1,4 @@
-pipelineJob("jobs/test_job_without_git") {
+pipelineJob("${PROJECT_NAME}/jobs/test_job_without_git") {
     logRotator {
         numToKeep(10)
     }
