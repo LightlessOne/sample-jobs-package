@@ -1,2 +1,2 @@
-folder(PIPELINE_NAME) {
+folder("tests") {
 }
