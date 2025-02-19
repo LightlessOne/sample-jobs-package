@@ -1,0 +1,65 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition>
+  <actions/>
+  <description/>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_REPO_URL</name>
+          <defaultValue>https://github.com/LightlessOne/sample-jobs-package</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_REPO_BRANCH</name>
+          <defaultValue>master</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>GIT_REPO_CREDENTIALS</name>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>PROJECT_NAME</name>
+          <defaultValue>TEST_PROJECT_FOLDER_1</defaultValue>
+          <trim>true</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition">
+    <script>
+pipeline {
+    agent any
+    stages {
+        stage(&apos;Checkout &amp; Process DSL&apos;) {
+            steps {
+                script {
+                    echo(&quot;Process DSL Params:&quot; +
+                        &quot;\n    GIT_REPO_URL=${GIT_REPO_URL}&quot; +
+                        &quot;\n    GIT_REPO_BRANCH=${GIT_REPO_BRANCH}&quot; +
+                        &quot;\n    GIT_REPO_CREDENTIALS=${GIT_REPO_CREDENTIALS}&quot; +
+                        &quot;\n    PROJECT_NAME=${PROJECT_NAME}&quot;)
+
+                    currentBuild.displayName = &quot;${GIT_REPO_URL} -> ${PROJECT_NAME}&quot;
+                    checkout changelog: false, poll: false,
+                        scm: scmGit(
+                            userRemoteConfigs: [[ credentialsId: GIT_REPO_CREDENTIALS, url: GIT_REPO_URL ]],
+                            branches: [[name: &quot;refs/heads/${GIT_REPO_BRANCH}&quot;]])
+
+                    jobDsl targets: &apos;dsl/**/*.groovy&apos;,
+                        removedJobAction: &apos;IGNORE&apos;,
+                        removedViewAction: &apos;IGNORE&apos;,
+                        lookupStrategy: &apos;SEED_JOB&apos;
+                }
+            }
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
