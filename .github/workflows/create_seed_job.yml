@@ -1,0 +1,32 @@
+name: Create SeedJob in Jenkins
+
+on:
+  workflow_dispatch:
+    inputs:
+      jenkins_url:
+        description: "URL of Jenkins"
+        default: https://your-jenkins-host:1234
+        type: string
+        required: true
+      seed_job_name:
+        description: "Name for created Seed Job"
+        default: SEED_JOB_FROM_GIT
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  create-seed-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install SeedJob in Jenkins
+      env:
+        JENKINS_USER: admin
+        JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+      run: |
+        wget -q ${{ inputs.jenkins_url }}/jnlpJars/jenkins-cli.jar
+        cat ./.github/resources/seed_job.xml | java -jar jenkins-cli.jar -s ${{ inputs.jenkins_url }} -auth ${{ env.JENKINS_USER }}:${{ env.JENKINS_TOKEN }} create-job ${{ inputs.seed_job_name }}

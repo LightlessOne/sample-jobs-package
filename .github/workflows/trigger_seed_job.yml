@@ -1,0 +1,53 @@
+name: Trigger SeedJob in Jenkins with specified params
+
+on:
+  workflow_dispatch:
+    inputs:
+      jenkins_url:
+        description: "URL of Jenkins"
+        default: https://your-jenkins-host:1234
+        type: string
+        required: true
+      seed_job_name:
+        description: "Name of Seed Job (expected to be a root job)"
+        default: SEED_JOB_FROM_GIT
+        type: string
+        required: true
+      git_repo_url:
+        description: "Git repo url to clone"
+        default: https://github.com/LightlessOne/sample-jobs-package
+        type: string
+        required: true
+      git_repo_branch:
+        description: "Branch to checkout"
+        default: master
+        type: string
+        required: true
+      git_repo_credentials:
+        description: "Jenkins credentials ID to use (when cloning private repo)"
+        default:
+        type: string
+        required: false
+      project_name:
+        description: "Name of created folder with jobs"
+        default: PROJECT_FROM_GIT
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-seed-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install SeedJob in Jenkins
+      env:
+        JENKINS_USER: admin
+        JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+      run: |
+        curl -X POST ${{ inputs.jenkins_url }}/job/${{ inputs.seed_job_name }}/build \
+        --user ${{ env.JENKINS_USER }}:${{ env.JENKINS_TOKEN }} \
+        --data-urlencode json='{"parameter": [{"name":"GIT_REPO_URL", "value":"${{ inputs.git_repo_url }}"}, {"name":"GIT_REPO_BRANCH", "value":"${{ inputs.git_repo_branch }}"}, {"name":"GIT_REPO_CREDENTIALS", "value":"${{ inputs.git_repo_credentials }}"}, {"name":"PROJECT_NAME", "value":"${{ inputs.project_name }}"}]}'
